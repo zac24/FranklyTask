@@ -13,6 +13,14 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    self.postTableViewController = [[ PostTableViewController alloc]initWithNibName:@"PostTableViewController" bundle:nil];
+    UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:self.postTableViewController];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = navigationController;
+    [application setStatusBarStyle:UIStatusBarStyleLightContent];
+    [self.window makeKeyAndVisible];
     return YES;
 }
 							

@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  PostTableViewController.h
 //  Frankly_task
 //
 //  Created by Prashant Dwivedi on 11/12/14.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface PostTableViewController : UIViewController
 
 @end
