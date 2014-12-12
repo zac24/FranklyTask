@@ -113,6 +113,8 @@
             [alert show];
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [self.spinner stopAnimating];
+        [self.refreshControl endRefreshing];
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving Data" message:[error localizedDescription]delegate:nil
                                                   cancelButtonTitle:@"Ok" otherButtonTitles:nil];
         [alertView show];
