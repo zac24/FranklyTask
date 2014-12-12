@@ -133,7 +133,7 @@
     AsyncImageView *asyncImageView;
     UILabel *postNameLabel;
     UILabel *postDetailLabel;
-    
+    [self.postTableView setSeparatorInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier]; // reuse of tableViewCell
     
     if (cell == nil) {
