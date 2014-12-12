@@ -7,9 +7,7 @@
 //
 
 #import "PostTableViewController.h"
-#import "Communication.h"
-#import "Reachability.h"
-#import "AsyncImageView.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface PostTableViewController ()
 
@@ -18,6 +16,7 @@
 @implementation PostTableViewController
 
 #define isiPhone5  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+#define kBgQueue dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
 #define CORNER_RADIUS 14.0f
 #define FONT_SIZE 13.0f
 #define CELL_CONTENT_WIDTH 320.0f
@@ -97,6 +96,7 @@
         if (dataArray)
         {
             [self.tmpPostDataArray addObjectsFromArray:[dataArray valueForKey:@"data"]];
+
             
 // ================ Sorting the posts in decending order and populating tableView ================
             NSSortDescriptor *sortDescriptor;
@@ -136,7 +136,7 @@
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
     NSString *CellIdentifier = @"Cell";
-    AsyncImageView *asyncImageView;
+    UIImageView *postImageView;
     UILabel *postNameLabel;
     UILabel *postDetailLabel;
     [self.postTableView setSeparatorInset:UIEdgeInsetsMake(0, 0, 0, 0)];
@@ -146,15 +146,15 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] ;
         
 // ================Use of asyncImageView to fetch the images asycnhornously ======================
-        
-        asyncImageView = [[AsyncImageView alloc] initWithFrame:CGRectMake(5.0f, 5.0f, 45.0f, 45.0f)];
-        [asyncImageView setBackgroundColor:[UIColor clearColor]];
-        asyncImageView.layer.cornerRadius = CORNER_RADIUS;
-        asyncImageView.layer.masksToBounds = YES;
-        asyncImageView.layer.borderWidth = 2;
-        asyncImageView.tag = 011;
-        asyncImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-         [cell.contentView addSubview:asyncImageView];
+
+        postImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0f, 5.0f, 45.0f, 45.0f)];
+        [postImageView setBackgroundColor:[UIColor clearColor]];
+        postImageView.layer.cornerRadius = CORNER_RADIUS;
+        postImageView.layer.masksToBounds = YES;
+        postImageView.layer.borderWidth = 2;
+        postImageView.tag = 011;
+        postImageView.layer.borderColor = [UIColor whiteColor].CGColor;
+         [cell.contentView addSubview:postImageView];
         
 // ==================== setting the properties for post name textField ========================
         
@@ -177,13 +177,11 @@
     
 // ================= Inserting the post info into textFields and imageView ========================
     
-    if(!asyncImageView){
-        asyncImageView = (AsyncImageView *) [cell viewWithTag:011];
+    if(!postImageView){
+        postImageView = (UIImageView *) [cell viewWithTag:011];
     }
     NSString *imageUrl = [[[[self.postDataArray objectAtIndex:indexPath.row]valueForKey:@"user"]valueForKey:@"avatar_image"]valueForKey:@"url"];
-    
-    [asyncImageView loadImageFromURL:[NSURL URLWithString:imageUrl]];
-    
+    [postImageView setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[UIImage imageNamed:@"navbar.png"]];
 
     if(!postNameLabel)
         postNameLabel = (UILabel *)[cell viewWithTag:1];
