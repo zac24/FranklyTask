@@ -42,6 +42,8 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"navbar.png"] forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName,[UIFont fontWithName:@"Helvetica Nueue" size:22.0], NSFontAttributeName,nil]];
     
+    self.tmpPostDataArray = [[NSMutableArray alloc]init];
+    
 // ====================  Implementation for Pull to Refresh =====================
     
     self.refreshControl = [[UIRefreshControl alloc] init];
@@ -94,11 +96,13 @@
         NSLog(@"success");
         if (dataArray)
         {
+            [self.tmpPostDataArray addObjectsFromArray:[dataArray valueForKey:@"data"]];
+            
 // ================ Sorting the posts in decending order and populating tableView ================
             NSSortDescriptor *sortDescriptor;
             sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"created_at" ascending:NO];
             NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-            self.postDataArray = [[dataArray valueForKey:@"data" ] sortedArrayUsingDescriptors:sortDescriptors];
+            self.postDataArray = [self.tmpPostDataArray sortedArrayUsingDescriptors:sortDescriptors];
             
             [self.spinner stopAnimating];
             [self.postTableView reloadData];

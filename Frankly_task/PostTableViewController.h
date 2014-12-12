@@ -24,6 +24,7 @@
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @property (nonatomic, strong) IBOutlet UITableView *postTableView;
 @property (nonatomic, strong) NSArray *postDataArray;
+@property (nonatomic, strong) NSMutableArray *tmpPostDataArray;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @end
