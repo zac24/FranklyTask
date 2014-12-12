@@ -13,4 +13,15 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+    #import "AppDelegate.h"
+    #import "AFNetworking.h"
 #endif
+
+// ================== Static messages or services of the app ==============================
+
+#define BASE_URL @"https://alpha-api.app.net/stream/0/posts/stream/global"
+
+#define app_name @"Frankly"
+#define Get_Post_Timeline_Data @"Get post timeline data"
+#define network_connectivity @"Your device is not connected to the Internet. Please check and try again."
+#define no_data_msg @"There seems to be an issue connecting to the server. Please try again in sometime."
