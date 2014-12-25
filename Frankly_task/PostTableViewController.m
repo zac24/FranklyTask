@@ -15,7 +15,6 @@
 
 @implementation PostTableViewController
 
-#define isiPhone5  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 #define kBgQueue dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
 #define CORNER_RADIUS 14.0f
 #define FONT_SIZE 13.0f
@@ -56,11 +55,6 @@
     [self.spinner setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
     [self.spinner setColor:[UIColor blackColor]];
     [self.view addSubview:self.spinner];
-
-// ================== Making 3.5" screen Compatible ===========================
-    if (!isiPhone5) {
-        [self.postTableView setFrame:CGRectMake(0, 0, 320, 480)];
-    }
     
 // ====================== Method call for fetching posts ======================
     
@@ -68,8 +62,7 @@
 }
 
 
-- (void)refresh:(UIRefreshControl *)refreshControl
-{
+- (void)refresh:(UIRefreshControl *)refreshControl{
     self.refreshControl.tag =111;
     [self getTheAppNetPostTimelineData];
 }
@@ -79,11 +72,8 @@
     NSString *string = [NSString stringWithFormat:@"%@", BASE_URL];
     NSURL *url = [NSURL URLWithString:string];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    
-    if(self.refreshControl.tag == 111){
-        [self.spinner setHidden:YES];
-    }else{
-    [NSThread detachNewThreadSelector:@selector(threadStartAnimating:) toTarget:self withObject:nil];
+    if (self.refreshControl.tag != 111) {
+         [NSThread detachNewThreadSelector:@selector(threadStartAnimating:) toTarget:self withObject:nil];
     }
     
 // ============ Using AFNetworking library feature to contact sever and fetch posts =============
@@ -93,37 +83,39 @@
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSArray *dataArray = (NSArray *)responseObject;
         NSLog(@"success");
-        if (dataArray)
-        {
+        if (dataArray){
+            //[self.tmpPostDataArray removeAllObjects];
             [self.tmpPostDataArray addObjectsFromArray:[dataArray valueForKey:@"data"]];
-
-            
-// ================ Sorting the posts in decending order and populating tableView ================
-            NSSortDescriptor *sortDescriptor;
-            sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"created_at" ascending:NO];
-            NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
-            self.postDataArray = [self.tmpPostDataArray sortedArrayUsingDescriptors:sortDescriptors];
-            
+            [self getSortedArray:self.tmpPostDataArray];
             [self.spinner stopAnimating];
-            [self.postTableView reloadData];
-            
             if(self.refreshControl){
                 [self.refreshControl endRefreshing];
             }
         }
-        else
-        {
+        else{
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:app_name message:no_data_msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
             [alert show];
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         [self.spinner stopAnimating];
         [self.refreshControl endRefreshing];
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving Data" message:[error localizedDescription]delegate:nil
-                                                  cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving Data" message:[error localizedDescription]delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
         [alertView show];
     }];
     [operation start];
+}
+
+// ================ Sorting the posts in decending order and populating tableView ================
+
+-(void)getSortedArray: (NSArray*)array{
+ 
+    array = [[NSSet setWithArray: array] allObjects];
+    NSSortDescriptor *sortDescriptor;
+    sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"created_at" ascending:NO];
+    NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+    self.postDataArray = [array sortedArrayUsingDescriptors:sortDescriptors];
+    [self.postTableView reloadData];
+    
 }
 
 #pragma mark - Table view data source methods
@@ -205,6 +197,8 @@
     if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
         [tableView setSeparatorInset:UIEdgeInsetsZero];
     }
+    
+// These methods aren't available in iOS7 and might not support in Xcode 5.x
     
     if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
         [tableView setLayoutMargins:UIEdgeInsetsZero];
